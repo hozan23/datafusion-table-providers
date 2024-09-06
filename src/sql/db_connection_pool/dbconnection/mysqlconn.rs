@@ -203,6 +203,7 @@ fn map_str_type_to_column_type(data_type: &str) -> Result<ColumnType> {
         _ if data_type.starts_with("float") => ColumnType::MYSQL_TYPE_FLOAT,
         _ if data_type.starts_with("double") => ColumnType::MYSQL_TYPE_DOUBLE,
         _ if data_type.eq("null") => ColumnType::MYSQL_TYPE_NULL,
+        _ if data_type.eq("timestamp(3)") => ColumnType::MYSQL_TYPE_TIMESTAMP,
         _ if data_type.eq("timestamp2") => ColumnType::MYSQL_TYPE_TIMESTAMP2,
         _ if data_type.eq("timestamp") => ColumnType::MYSQL_TYPE_TIMESTAMP,
         _ if data_type.eq("datetime2") => ColumnType::MYSQL_TYPE_DATETIME2,
