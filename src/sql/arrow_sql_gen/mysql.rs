@@ -1,10 +1,10 @@
 use crate::sql::arrow_sql_gen::arrow::map_data_type_to_array_builder_optional;
 use arrow::{
     array::{
-        ArrayBuilder, ArrayRef, BinaryBuilder, Date32Builder, Decimal128Builder, Float32Builder,
-        Float64Builder, Int16Builder, Int32Builder, Int64Builder, Int8Builder, LargeStringBuilder,
-        NullBuilder, RecordBatch, RecordBatchOptions, Time64NanosecondBuilder,
-        TimestampMillisecondBuilder, UInt64Builder,
+        ArrayBuilder, ArrayRef, Date32Builder, Decimal128Builder, Float32Builder, Float64Builder,
+        Int16Builder, Int32Builder, Int64Builder, Int8Builder, LargeStringBuilder, NullBuilder,
+        RecordBatch, RecordBatchOptions, Time64NanosecondBuilder, TimestampMillisecondBuilder,
+        UInt64Builder,
     },
     datatypes::{DataType, Date32Type, Field, Schema, SchemaRef, TimeUnit},
 };
@@ -281,25 +281,14 @@ pub fn rows_to_arrow(rows: &[Row], projected_schema: &Option<SchemaRef>) -> Resu
                 }
                 column_type @ (ColumnType::MYSQL_TYPE_STRING
                 | ColumnType::MYSQL_TYPE_VAR_STRING) => {
-                    if column_is_binary_stats[i] {
-                        handle_primitive_type!(
-                            builder,
-                            column_type,
-                            BinaryBuilder,
-                            Vec<u8>,
-                            row,
-                            i
-                        );
-                    } else {
-                        handle_primitive_type!(
-                            builder,
-                            column_type,
-                            LargeStringBuilder,
-                            String,
-                            row,
-                            i
-                        );
-                    }
+                    handle_primitive_type!(
+                        builder,
+                        column_type,
+                        LargeStringBuilder,
+                        String,
+                        row,
+                        i
+                    );
                 }
                 ColumnType::MYSQL_TYPE_DATE => {
                     let Some(builder) = builder else {
@@ -435,7 +424,7 @@ pub fn rows_to_arrow(rows: &[Row], projected_schema: &Option<SchemaRef>) -> Resu
 #[allow(clippy::unnecessary_wraps)]
 pub fn map_column_to_data_type(
     column_type: ColumnType,
-    column_is_binary: bool,
+    _column_is_binary: bool,
     column_decimal_precision: Option<u8>,
     column_decimal_scale: Option<i8>,
 ) -> Option<DataType> {
@@ -466,13 +455,7 @@ pub fn map_column_to_data_type(
         | ColumnType::MYSQL_TYPE_MEDIUM_BLOB
         | ColumnType::MYSQL_TYPE_LONG_BLOB => Some(DataType::LargeUtf8),
         ColumnType::MYSQL_TYPE_STRING
-        | ColumnType::MYSQL_TYPE_VAR_STRING => {
-            if column_is_binary {
-                Some(DataType::Binary)
-            } else {
-                Some(DataType::LargeUtf8)
-            }
-        },
+        | ColumnType::MYSQL_TYPE_VAR_STRING => Some(DataType::LargeUtf8),
         // replication only
         ColumnType::MYSQL_TYPE_TYPED_ARRAY
         // internal

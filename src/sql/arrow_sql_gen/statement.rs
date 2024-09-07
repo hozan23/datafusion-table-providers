@@ -16,7 +16,7 @@ use sea_query::{
     QueryBuilder, SimpleExpr, SqliteQueryBuilder, StringLen, Table,
 };
 use snafu::Snafu;
-use std::{any::Any, sync::Arc};
+use std::sync::Arc;
 use time::{OffsetDateTime, PrimitiveDateTime};
 
 #[derive(Debug, Snafu)]
@@ -177,8 +177,8 @@ pub struct InsertBuilder {
 }
 
 pub fn use_json_insert_for_type<T: QueryBuilder + 'static>(
-    data_type: &DataType,
-    query_builder: &T,
+    _data_type: &DataType,
+    _query_builder: &T,
 ) -> bool {
     #[cfg(feature = "sqlite")]
     if (query_builder as &dyn Any)
